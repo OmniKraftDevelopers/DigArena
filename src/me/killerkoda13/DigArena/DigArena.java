@@ -41,6 +41,12 @@ public class DigArena extends JavaPlugin {
             Bukkit.getLogger().log(Level.INFO, "Cannot run this command from console");
         }
 
+
+        if(cmd.getName().equalsIgnoreCase("test"))
+        {
+            p.sendMessage("Test");
+        }
+
         return true;
     }
 }

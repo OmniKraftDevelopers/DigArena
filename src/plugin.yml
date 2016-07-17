@@ -1,0 +1,9 @@
+name: DigArena
+main: me.killerkoda13.DigArena.DigArena
+version: 0.0.1
+description: DigArena generation plugin
+author: Killerkoda13
+commands:
+   test:
+      description: Testing command
+      usage: /<command>
