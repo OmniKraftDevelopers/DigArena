@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="DigArena">
+    <output-path>$PROJECT_DIR$/out/artifacts/DigArena</output-path>
+    <root id="archive" name="DigArena.jar">
+      <element id="module-output" name="DigArenPlugin" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/plugin.yml" />
+    </root>
+  </artifact>
+</component>
