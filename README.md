@@ -9,3 +9,5 @@ DigArena random generation w/ xray protection
 - [ ] Region grabbing
 - [ ] Item list w/ easy addition system
 - [ ] Simple cmd system
+- [ ] Convert to maven
+- [ ] Shade jar
