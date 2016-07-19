@@ -1,8 +1,10 @@
 package me.killerkoda13.DigArena.EventListener;
 
+import me.killerkoda13.DigArena.FileUtils.RewardManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -14,6 +16,7 @@ import javax.annotation.Nullable;
  */
 public class BlockEvent implements Listener {
 
+    RewardManager manager = new RewardManager();
 
     @Nullable
     public Block isRewardVisible(Block b) {
@@ -40,7 +43,9 @@ public class BlockEvent implements Listener {
 
         if (isRewardVisible(event.getBlock()) != null) {
             Block block = isRewardVisible(event.getBlock());
-            block.setType(Material.OBSIDIAN);
+            block.setType(Material.CHEST);
+            Chest chest = (Chest) block;
+            chest.getInventory().addItem(manager.getReward(block.getMetadata("reward_id").get(0).asString()));
         }
     }
 

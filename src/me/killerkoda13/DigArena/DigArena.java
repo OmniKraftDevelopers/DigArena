@@ -1,18 +1,24 @@
 package me.killerkoda13.DigArena;
 
+import com.sk89q.worldguard.bukkit.WGBukkit;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.killerkoda13.DigArena.EventListener.BlockEvent;
 import me.killerkoda13.DigArena.FileUtils.RewardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 /**
@@ -22,6 +28,7 @@ public class DigArena extends JavaPlugin {
 
 
     static Plugin plugin; /* Used to be pulled by one method to get local plugin instance*/
+    ArrayList<Block> rewardBlocks = new ArrayList<Block>();
 
     public static Plugin getPlugin() {
         return plugin;
@@ -89,31 +96,38 @@ public class DigArena extends JavaPlugin {
             Bukkit.getLogger().log(Level.INFO, "Cannot run this command from console");
         }
 
-        if(cmd.getName().equalsIgnoreCase("test")) {
+        if (cmd.getName().equalsIgnoreCase("generatearena")) {
 
             RewardManager manager = new RewardManager();
-            manager.addReward(p.getItemInHand(), args[0].toString(), true);
-            manager.listRewards(p);
-//            p.sendMessage("Testing Information:");
-//            for (ProtectedRegion r : WGBukkit.getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation())) {
-//                List<Block> blocks = blocksFromTwoPoints(new Location(p.getWorld(), r.getMaximumPoint().getBlockX(), r.getMaximumPoint().getBlockY(), r.getMaximumPoint().getBlockZ()), new Location(p.getWorld(), r.getMinimumPoint().getBlockX(), r.getMinimumPoint().getBlockY(), r.getMinimumPoint().getBlockZ()));
-//                for (Block block : blocks) {
-//                    Random rand = new Random();
-//                    int value = rand.nextInt(800);
-//                    if (value > Integer.parseInt(args[0].toString())) {
-//                        if (block.getRelative(BlockFace.DOWN).getType() != Material.GLASS || block.getRelative(BlockFace.UP).getType() != Material.GLASS || block.getRelative(BlockFace.EAST).getType() != Material.GLASS || block.getRelative(BlockFace.WEST).getType() != Material.GLASS || block.getRelative(BlockFace.NORTH).getType() != Material.GLASS || block.getRelative(BlockFace.SOUTH).getType() != Material.GLASS) {
-//                            block.setType(Material.GLASS);
-//                        } else {
-//                            block.setType(Material.STAINED_GLASS);
-//                            block.setMetadata("reward", new FixedMetadataValue(plugin, "reward"));
-//                        }
-//                    } else {
-//                        block.setType(p.getItemInHand().getType());
-//                    }
-//                }
-//                p.sendMessage("Changed: " + blocks.size());
-//                p.sendMessage("Name: " + r.getId());
-            //}
+            //manager.addReward(p.getItemInHand(), args[0].toString(), true);
+            //  manager.listRewards(p);
+            p.sendMessage("Testing Information:");
+            for (ProtectedRegion r : WGBukkit.getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation())) {
+                List<Block> blocks = blocksFromTwoPoints(new Location(p.getWorld(), r.getMaximumPoint().getBlockX(), r.getMaximumPoint().getBlockY(), r.getMaximumPoint().getBlockZ()), new Location(p.getWorld(), r.getMinimumPoint().getBlockX(), r.getMinimumPoint().getBlockY(), r.getMinimumPoint().getBlockZ()));
+                for (Block block : blocks) {
+                    Random rand = new Random();
+                    int value = rand.nextInt(800);
+                    if (value > Integer.parseInt(args[0].toString())) {
+                        if (block.getRelative(BlockFace.DOWN).getType() != Material.GLASS || block.getRelative(BlockFace.UP).getType() != Material.GLASS || block.getRelative(BlockFace.EAST).getType() != Material.GLASS || block.getRelative(BlockFace.WEST).getType() != Material.GLASS || block.getRelative(BlockFace.NORTH).getType() != Material.GLASS || block.getRelative(BlockFace.SOUTH).getType() != Material.GLASS) {
+                            block.setType(Material.GLASS);
+                        } else {
+                            block.setType(Material.STAINED_GLASS);
+                            block.setMetadata("reward", new FixedMetadataValue(plugin, "reward"));
+                            rewardBlocks.add(block);
+
+                        }
+                    } else {
+                        block.setType(p.getItemInHand().getType());
+                    }
+                }
+                manager.generateRewards(rewardBlocks);
+                p.sendMessage("Changed: " + blocks.size());
+                p.sendMessage("Name: " + r.getId());
+            }
+        } else if (cmd.getName().equalsIgnoreCase("additem")) {
+            RewardManager manager = new RewardManager();
+            manager.addReward(p.getItemInHand(), args[0]);
+            p.sendMessage("Added item");
         }
 
         return true;
