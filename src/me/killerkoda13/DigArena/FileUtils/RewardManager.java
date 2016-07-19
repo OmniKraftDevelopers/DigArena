@@ -31,7 +31,7 @@ public class RewardManager {
     }
 
     public boolean addReward(ItemStack stack, String ID) {
-        File file = new File(rewardFolder + "/" + ID + ".txt");
+        File file = new File(rewardFolder + "/" + ID);
         if (file.exists()) {
             return false;
         } else {
@@ -56,9 +56,8 @@ public class RewardManager {
     public void listRewards(Player player) {
         player.sendMessage(ChatColor.GREEN + "Rewards:      Recurring:");
         for (File file : rewardFolder.listFiles()) {
-            String name = file.getName().split("'")[0];
-            player.sendMessage(ChatColor.GOLD + "ID:" + name + " | " + file.getName().split("'")[1].split("'")[0]);
-
+            String name = file.getName();
+            player.sendMessage(ChatColor.GOLD + "ID:" + name);
         }
     }
 
@@ -78,7 +77,8 @@ public class RewardManager {
         //Step one
         ArrayList<String> rewards = new ArrayList<String>();
         for (File file : rewardFolder.listFiles()) {
-            rewards.add(file.getName().split(".")[0]);
+            System.out.println(file.getName());
+            rewards.add(file.getName());
         }
 
         //Step two
@@ -86,7 +86,7 @@ public class RewardManager {
             boolean invalid = false;
             while (invalid == false) {
                 Random random = new Random();
-                int index = random.nextInt(rewards.size() - 1);
+                int index = random.nextInt(rewards.size());
                 if (used.contains(rewards.get(index))) {
                     return;
                 } else {
@@ -105,7 +105,7 @@ public class RewardManager {
         ArrayList<String> ids = new ArrayList<String>();
         ItemStack stack = new ItemStack(Material.AIR);
         for (File file : rewardFolder.listFiles()) {
-            ids.add(file.getName().split("'")[0]);
+            ids.add(file.getName());
         }
 
         if (ids.contains(ID)) {

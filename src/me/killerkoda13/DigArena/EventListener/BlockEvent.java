@@ -8,8 +8,11 @@ import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.metadata.MetadataValue;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Created by Alex on 7/17/2016.
@@ -42,10 +45,15 @@ public class BlockEvent implements Listener {
     public void BreakBlockE(BlockBreakEvent event) {
 
         if (isRewardVisible(event.getBlock()) != null) {
+            System.out.println("Block visible");
             Block block = isRewardVisible(event.getBlock());
+            Inventory inv =    //TODO create temp itemstack - signing off for tomorrow. 7/18/16
+                    inv.addItem(manager.getReward(block.getMetadata("reward_id").get(0).asString()));
             block.setType(Material.CHEST);
-            Chest chest = (Chest) block;
-            chest.getInventory().addItem(manager.getReward(block.getMetadata("reward_id").get(0).asString()));
+            Chest chest = (Chest) block.getState();
+
+
+            //chest.getInventory().
         }
     }
 
