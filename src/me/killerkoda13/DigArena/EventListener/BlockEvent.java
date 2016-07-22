@@ -1,5 +1,6 @@
 package me.killerkoda13.DigArena.EventListener;
 
+import me.killerkoda13.DigArena.DigArena;
 import me.killerkoda13.DigArena.FileUtils.RewardManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 
 import javax.annotation.Nullable;
@@ -21,7 +23,6 @@ public class BlockEvent implements Listener {
 
     RewardManager manager = new RewardManager();
 
-    @Nullable
     public Block isRewardVisible(Block b) {
         if (b.getRelative(BlockFace.DOWN).hasMetadata("reward")) {
             return b.getRelative(BlockFace.DOWN);
@@ -44,13 +45,14 @@ public class BlockEvent implements Listener {
     @EventHandler
     public void BreakBlockE(BlockBreakEvent event) {
 
+        event.getPlayer().sendMessage(String.valueOf(event.getBlock().hasMetadata("reward")));
         if (isRewardVisible(event.getBlock()) != null) {
-            System.out.println("Block visible");
             Block block = isRewardVisible(event.getBlock());
-            Inventory inv =    //TODO create temp itemstack - signing off for tomorrow. 7/18/16
-                    inv.addItem(manager.getReward(block.getMetadata("reward_id").get(0).asString()));
+            ItemStack stack = manager.getReward(block.getMetadata("reward_id").get(0).asString());
             block.setType(Material.CHEST);
             Chest chest = (Chest) block.getState();
+            chest.getInventory().addItem(stack);
+            block.removeMetadata("reward", DigArena.getPlugin());
 
 
             //chest.getInventory().
