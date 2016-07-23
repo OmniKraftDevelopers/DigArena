@@ -1,25 +1,18 @@
 package me.killerkoda13.DigArena;
 
-import com.sk89q.worldguard.bukkit.WGBukkit;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.killerkoda13.DigArena.ArenaUtils.Generator;
 import me.killerkoda13.DigArena.EventListener.BlockEvent;
-import me.killerkoda13.DigArena.FileUtils.RewardManager;
+import me.killerkoda13.DigArena.ArenaUtils.RewardManager;
+import me.killerkoda13.DigArena.FileUtils.ConfigManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 
 /**
@@ -40,21 +33,13 @@ public class DigArena extends JavaPlugin {
      * pulls local plugin instance
      */
 
-    public void loadConfiguration() {
-        String generator = "Settings.Generator.RandomSeed";
-        String prevalence = "Settings.Generator.Prevalence";
-        getConfig().addDefault(generator, "800");
-        getConfig().addDefault(prevalence, "798");
 
-        getConfig().options().copyDefaults(true);
-        //Save the config whenever you manipulate it
-        saveConfig();
-    }
 
     @Override
     public void onEnable() {
         Bukkit.getLogger().log(Level.INFO, "DigArena plugin enabled!");
-        loadConfiguration();
+        ConfigManager manager = new ConfigManager(this);
+        manager.loadConfiguration();
         plugin = this; /* Initialize local plugin instance*/
         getServer().getPluginManager().registerEvents(new BlockEvent(), this);
 
@@ -73,22 +58,68 @@ public class DigArena extends JavaPlugin {
             Bukkit.getLogger().log(Level.INFO, "Cannot run this command from console");
         }
 
-        if (cmd.getName().equalsIgnoreCase("generatearena")) {
+        if (cmd.getName().equalsIgnoreCase("DigArena")) {
 
-            RewardManager manager = new RewardManager();
-            Generator gen = new Generator(p, p.getItemInHand().getType());
-            gen.generateArena();
-            //manager.addReward(p.getItemInHand(), args[0].toString(), true);
-            //  manager.listRewards(p);
-            Material genMat = p.getItemInHand().getType();
-            p.sendMessage("Testing Information:");
+            if (args.length == 0) /** Show help menu*/ {
+                p.sendMessage(ChatColor.GRAY + "Dig arena help menu");
+                p.sendMessage(ChatColor.GREEN + "/digarena generate <WorldGuard_Region>");
+                p.sendMessage(ChatColor.GREEN + "/digarena additem <id>");
+                p.sendMessage(ChatColor.GREEN + "/digarena remitem <id>");
+                p.sendMessage(ChatColor.GREEN + "/digarena list");
+            } else {
+                switch (args[0].toString().toLowerCase()) {
+                    case "generate":
+                        if (args.length == 1) {
+                            p.sendMessage(ChatColor.RED + "Please enter region name");
+                        } else if (args.length == 2) {
+                            Generator gen = new Generator(p, p.getItemInHand().getType(), args[1].toString());
+                            gen.generateArena();
+                            p.sendMessage(ChatColor.GREEN + "Arena generated with " + Generator.rewardAmount + " chests");
+                        }
 
-        } else if (cmd.getName().equalsIgnoreCase("additem")) {
-            RewardManager manager = new RewardManager();
-            manager.addReward(p.getItemInHand(), args[0]);
-            p.sendMessage("Added item");
+                        p.sendMessage("Generated arena");
+                        break;
+                    case "additem":
+                        if (p.getItemInHand().getType() != Material.AIR) {
+                            if (args.length == 1) {
+                                p.sendMessage(ChatColor.RED + "Please enter reward item ID");
+                            } else if (args.length == 2) {
+
+                                RewardManager manager = new RewardManager();
+                                boolean passed = manager.addReward(p.getItemInHand(), args[1]);
+                                if (passed == true) {
+                                    p.sendMessage(ChatColor.GREEN + "Successfully added reward with ID " + args[1].toUpperCase());
+                                } else {
+                                    p.sendMessage(ChatColor.RED + "Failed to add item to reward list. Likely ID is already used.");
+                                }
+                            }
+                        } else {
+                            p.sendMessage(ChatColor.RED + "Cannot create reward with material type AIR");
+                        }
+                        break;
+                    case "removeitem":
+                        RewardManager manager = new RewardManager();
+                        if (args.length == 1) {
+                            boolean passed = manager.removeReward(args[1]);
+                            if (passed == true) {
+                                p.sendMessage(ChatColor.GREEN + args[1] + " successfully removed");
+                            } else {
+                                p.sendMessage(ChatColor.RED + args[1] + " was unable to be removed. Likely item ID is invalid");
+                            }
+                        }
+                        break;
+                    case "list":
+                        RewardManager manager1 = new RewardManager();
+                        manager1.listRewards(p);
+                        break;
+                    default:
+                        p.sendMessage(ChatColor.RED + "Incorrect sub command. Try doing /digarena for more help.");
+                        break;
+                }
+            }
         }
-
         return true;
     }
+
+
 }

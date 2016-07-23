@@ -1,6 +1,7 @@
-package me.killerkoda13.DigArena.FileUtils;
+package me.killerkoda13.DigArena.ArenaUtils;
 
 import me.killerkoda13.DigArena.DigArena;
+import me.killerkoda13.DigArena.FileUtils.SerializerUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,8 +31,19 @@ public class RewardManager {
         }
     }
 
+
+    public boolean removeReward(String ID) {
+        File file = new File(rewardFolder + "/" + ID.toUpperCase());
+        if (file.exists()) {
+            file.delete();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean addReward(ItemStack stack, String ID) {
-        File file = new File(rewardFolder + "/" + ID);
+        File file = new File(rewardFolder + "/" + ID.toUpperCase());
         if (file.exists()) {
             return false;
         } else {
@@ -54,14 +66,13 @@ public class RewardManager {
     }
 
     public void listRewards(Player player) {
-        player.sendMessage(ChatColor.GREEN + "Rewards:      Recurring:");
+        player.sendMessage(ChatColor.GREEN + "Rewards:");
         for (File file : rewardFolder.listFiles()) {
             String name = file.getName();
             player.sendMessage(ChatColor.GOLD + "ID:" + name);
         }
     }
 
-    //TODO remove 'true' recurring option
     public void generateRewards(ArrayList<Block> rewardBlocks) {
         /**
          * "Step by step for mental note so that I don't screw this up again" - koda on his 3rd damn try writing this...
@@ -85,14 +96,15 @@ public class RewardManager {
         for (Block block : rewardBlocks) {
             boolean invalid = false;
             while (invalid == false) {
-                Random random = new Random();
-                int index = random.nextInt(rewards.size());
+                int index = new Random().nextInt(rewards.size());
                 if (used.contains(rewards.get(index))) {
                     return;
                 } else {
-                    invalid = true;
+                    System.out.println(rewards.get(index));
                     block.setMetadata("reward_id", new FixedMetadataValue(DigArena.getPlugin(), rewards.get(index)));
                     used.add(rewards.get(index));
+                    invalid = true;
+
                 }
             }
             invalid = false;

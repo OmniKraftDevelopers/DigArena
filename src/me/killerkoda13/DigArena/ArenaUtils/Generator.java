@@ -3,7 +3,6 @@ package me.killerkoda13.DigArena.ArenaUtils;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.killerkoda13.DigArena.DigArena;
-import me.killerkoda13.DigArena.FileUtils.RewardManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,16 +21,18 @@ import java.util.Random;
 public class Generator {
 
 
+    public static int rewardAmount = 0;
     Player player;
+    String regionID;
     Plugin plugin;
     Material material;
     ArrayList<Block> rewardBlocks = new ArrayList<Block>();
 
-    public Generator(Player player, Material mat) {
+    public Generator(Player player, Material mat, String region) {
         this.player = player;
         this.material = mat;
         this.plugin = DigArena.getPlugin();
-
+        this.regionID = region;
     }
 
     public static List<Block> blocksFromTwoPoints(Location loc1, Location loc2) {
@@ -50,20 +51,19 @@ public class Generator {
             for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                 for (int y = bottomBlockY; y <= topBlockY; y++) {
                     Block block = loc1.getWorld().getBlockAt(x, y, z);
-
                     blocks.add(block);
                 }
             }
         }
-
         return blocks;
     }
 
     public void generateArena() {
         RewardManager manager = new RewardManager();
-
-        for (ProtectedRegion r : WGBukkit.getRegionManager(player.getWorld()).getApplicableRegions(player.getLocation())) {
+        rewardBlocks.clear();
+        ProtectedRegion r = WGBukkit.getRegionManager(player.getWorld()).getRegion(this.regionID);
             List<Block> blocks = blocksFromTwoPoints(new Location(player.getWorld(), r.getMaximumPoint().getBlockX(), r.getMaximumPoint().getBlockY(), r.getMaximumPoint().getBlockZ()), new Location(player.getWorld(), r.getMinimumPoint().getBlockX(), r.getMinimumPoint().getBlockY(), r.getMinimumPoint().getBlockZ()));
+
             for (Block block : blocks) {
                 Random rand = new Random();
                 int value = rand.nextInt(800);
@@ -79,8 +79,8 @@ public class Generator {
                     block.setType(material);
                 }
             }
+        rewardAmount = rewardBlocks.size();
             manager.generateRewards(rewardBlocks);
 
-        }
     }
 }

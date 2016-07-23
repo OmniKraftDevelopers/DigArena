@@ -4,9 +4,6 @@ version: 0.0.1
 description: DigArena generation plugin
 author: Killerkoda13
 commands:
-   generatearena:
+   digarena:
       description: generate arena
-      usage: /<command>
-   additem:
-      description: add item to rewards
       usage: /<command>

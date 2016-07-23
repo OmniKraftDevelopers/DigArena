@@ -1,7 +1,7 @@
 package me.killerkoda13.DigArena.EventListener;
 
 import me.killerkoda13.DigArena.DigArena;
-import me.killerkoda13.DigArena.FileUtils.RewardManager;
+import me.killerkoda13.DigArena.ArenaUtils.RewardManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -9,12 +9,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.MetadataValue;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Created by Alex on 7/17/2016.
@@ -45,17 +40,16 @@ public class BlockEvent implements Listener {
     @EventHandler
     public void BreakBlockE(BlockBreakEvent event) {
 
-        event.getPlayer().sendMessage(String.valueOf(event.getBlock().hasMetadata("reward")));
         if (isRewardVisible(event.getBlock()) != null) {
             Block block = isRewardVisible(event.getBlock());
-            ItemStack stack = manager.getReward(block.getMetadata("reward_id").get(0).asString());
-            block.setType(Material.CHEST);
-            Chest chest = (Chest) block.getState();
-            chest.getInventory().addItem(stack);
-            block.removeMetadata("reward", DigArena.getPlugin());
+            if (block.hasMetadata("reward_id")) {
+                ItemStack stack = manager.getReward(block.getMetadata("reward_id").get(0).asString());
+                block.setType(Material.CHEST);
+                Chest chest = (Chest) block.getState();
+                chest.getInventory().addItem(stack);
+                block.removeMetadata("reward", DigArena.getPlugin());
+            }
 
-
-            //chest.getInventory().
         }
     }
 
