@@ -11,7 +11,7 @@ DigArena random generation w/ xray protection
 - [x] Simple cmd system
 - [ ] Convert to maven
 - [ ] Shade jar
-
+- [ ] Add alias commands - added 7/23/2016
 ---
 ###7/23/16 todo
 
