@@ -16,7 +16,7 @@ DigArena random generation w/ xray protection
 ---
 ###7/23/16 todo
 
-- [ ] Finish permissions
+- [x] Finish permissions
 - [ ] Finish config manager
 - [ ] tweak generator
 - [ ] begin and end commands w/ broadcast
